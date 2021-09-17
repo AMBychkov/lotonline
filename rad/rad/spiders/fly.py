@@ -4,6 +4,8 @@ import datetime
 import re
 import requests
 from bs4 import BeautifulSoup
+from ..items import RadItem
+from ..pipelines import RadPipeline
 
 
 def drop_price_table(page):
@@ -195,10 +197,10 @@ def room_finder(description):
         "5- ком": 5,
     }
     patterns = [
-                "Однокомнатная", "Двухкомнатная", "Трехкомнатная", "Трёхкомнатная", "Четырехкомнатная",
-                "Четырёхкомнатная", "Пятикомнатная", "Свободная планировка",
-                "\d+-а ком", "\d+-ком", "\d+ ком", "\d+ - ком", "\d+- ком"
-            ]
+        "Однокомнатная", "Двухкомнатная", "Трехкомнатная", "Трёхкомнатная", "Четырехкомнатная",
+        "Четырёхкомнатная", "Пятикомнатная", "Свободная планировка",
+        "\d+-а ком", "\d+-ком", "\d+ ком", "\d+ - ком", "\d+- ком"
+    ]
 
     for pat in patterns:
         a = re.findall(pat, description)
@@ -285,7 +287,7 @@ class TestSpider(scrapy.Spider):
 
     start_urls = [
         "https://catalog.lot-online.ru/index.php?dispatch=categories.view&category_id=1&features_hash=174-31371"
-        "&sort_by=timestamp&sort_order=desc&layout=short_list&items_per_page=154",
+        "&sort_by=timestamp&sort_order=desc&layout=short_list&items_per_page=2555",
     ]
 
     def parse(self, response):
@@ -445,10 +447,10 @@ class TestSpider(scrapy.Spider):
 
         # Поиск информации о рыночной цене наа яндекс.недвижимость
         market_price = yandex_market_price(address, room)
-
+        etp = "Российский аукционный дом"
         yield response.follow(lot_link, meta={
             'lot_id': response.meta['lot_id'],
-            'etp': "Российский аукционный дом",
+            'etp': etp,
             'lot_number': lot_number,
             'description_short': response.meta['description_short'],
             'price_actual': price_actual['price_actual'],
@@ -493,6 +495,7 @@ class TestSpider(scrapy.Spider):
         }, callback=self.right_block)
 
     def right_block(self, response):
+        items = RadItem()
         # Базовые значения в случае ошибок при парсинге
         application_start = None
         application_deadline = None
@@ -533,48 +536,48 @@ class TestSpider(scrapy.Spider):
             else:
                 deposit = response.meta['deposit']
 
-        yield {
-            'lot_id': response.meta['lot_id'],
-            'etp': "Российский аукционный дом",
-            'lot_number': response.meta['lot_number'],
-            'description_short': response.meta['description_short'],
-            'price_actual': response.meta['price_actual'],
-            'lot_link': response.meta['lot_link'],
-            'description': response.meta['description'],
-            'price_start': response.meta['price_start'],
-            'chart_price': response.meta['chart_price'],
-            'price_market': response.meta['price_market'],
-            'price_step': price_step,
-            'deposit': deposit,
-            'cadastral_value': response.meta['cadastral_value'],
-            'category': response.meta['category'],
-            'subcategory': response.meta['subcategory'],
-            'address': response.meta['address'],
-            'auction_type': response.meta['auction_type'],
-            'auction_status': response.meta['auction_status'],
-            'application_start': application_start,
-            'application_deadline': application_deadline,
-            'bankrupt': response.meta['bankrupt'],
-            'bankrupt_href': response.meta['bankrupt_href'],
-            'inn_bankruptcy': response.meta['inn_bankruptcy'],
-            'contact_person': response.meta['contact_person'],
-            'phone': response.meta['phone'],
-            'email': response.meta['email'],
-            'inn_organizer': response.meta['inn_organizer'],
-            'trading_number': response.meta['trading_number'],
-            'lot_online': response.meta['lot_online'],
-            'fedresurs': response.meta['fedresurs'],
-            'organizer': response.meta['organizer'],
-            'organizer_link': response.meta['organizer_link'],
-            'image_links': response.meta['image_links'],
-            'etp_latitude': response.meta['etp_latitude'],
-            'etp_longitude': response.meta['etp_longitude'],
-            'kadastr_price': response.meta['kadastr_price'],
-            'market_price': response.meta['market_price'],
-            'square_zem_value': response.meta['square_zem_value'],
-            'square_value': response.meta['square_value'],
-            'flat_rooms': response.meta['flat_rooms'],
-            'latitude': response.meta['latitude'],
-            'longitude': response.meta['longitude'],
-            'image_links_external': response.meta['image_links_external'],
-        }
+        items['lot_id'] = str(response.meta['lot_id'])
+        items['etp'] = str("Российский аукционный дом")
+        items['lot_number'] = str(response.meta['lot_number'])
+        items['description_short'] = str(response.meta['description_short'])
+        items['price_actual'] = str(response.meta['price_actual'])
+        items['lot_link'] = str(response.meta['lot_link'])
+        items['description'] = str(response.meta['description'])
+        items['price_start'] = str(response.meta['price_start'])
+        items['chart_price'] = str(response.meta['chart_price'])
+        items['price_market'] = str(response.meta['price_market'])
+        items['price_step'] = str(price_step)
+        items['deposit'] = str(deposit)
+        items['cadastral_value'] = str(response.meta['cadastral_value'])
+        items['category'] = str(response.meta['category'])
+        items['subcategory'] = str(response.meta['subcategory'])
+        items['address'] = str(response.meta['address'])
+        items['auction_type'] = str(response.meta['auction_type'])
+        items['auction_status'] = str(response.meta['auction_status'])
+        items['application_start'] = str(application_start)
+        items['application_deadline'] = str(application_deadline)
+        items['bankrupt'] = str(response.meta['bankrupt'])
+        items['bankrupt_href'] = str(response.meta['bankrupt_href'])
+        items['inn_bankruptcy'] = str(response.meta['inn_bankruptcy'])
+        items['contact_person'] = str(response.meta['contact_person'])
+        items['phone'] = str(response.meta['phone'])
+        items['email'] = str(response.meta['email'])
+        items['inn_organizer'] = str(response.meta['inn_organizer'])
+        items['trading_number'] = str(response.meta['trading_number'])
+        items['lot_online'] = str(response.meta['lot_online'])
+        items['fedresurs'] = str(response.meta['fedresurs'])
+        items['organizer'] = str(response.meta['organizer'])
+        items['organizer_link'] = str(response.meta['organizer_link'])
+        items['image_links'] = str(response.meta['image_links'])
+        items['etp_latitude'] = str(response.meta['etp_latitude'])
+        items['etp_longitude'] = str(response.meta['etp_longitude'])
+        items['kadastr_price'] = str(response.meta['kadastr_price'])
+        items['market_price'] = str(response.meta['market_price'])
+        items['square_zem_value'] = str(response.meta['square_zem_value'])
+        items['square_value'] = str(response.meta['square_value'])
+        items['flat_rooms'] = str(response.meta['flat_rooms'])
+        items['latitude'] = str(response.meta['latitude'])
+        items['longitude'] = str(response.meta['longitude'])
+        items['image_links_external'] = str(response.meta['image_links_external'])
+
+        yield items
