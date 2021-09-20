@@ -15,11 +15,12 @@ class RadPipeline(object):
         self.create_table()
 
     def create_connection(self):
+        # Установление соединения с БД
         self.conn = mysql.connector.connect(
-            host='localhost',
-            user='root',
-            passwd='4vvt3pd3',
-            database='lotonline_rad'
+            host='localhost',  # адрес БД
+            user='root',  # Имя пользователя
+            passwd='password',  # Пароль
+            database='lotonline_rad'  # Имя БД
         )
         self.curr = self.conn.cursor()
 
@@ -72,8 +73,8 @@ class RadPipeline(object):
         );""")
 
     def process_item(self, item, spider):
-        print("pipe" + item['lot_id'])
         self.store_db(item)
+        self.conn.commit()  # Для корректной работы на удаленном сервере
         return item
 
     def store_db(self, item):
@@ -81,49 +82,48 @@ class RadPipeline(object):
         INSERT INTO rad_tb VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
         %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
         %s)""", (
-                item['lot_id'],
-                item['etp'],
-                item['lot_number'],
-                item['description_short'],
-                item['price_actual'],
-                item['lot_link'],
-                item['description'],
-                item['price_start'],
-                item['chart_price'],
-                item['price_market'],
-                item['price_step'],
-                item['deposit'],
-                item['cadastral_value'],
-                item['category'],
-                item['subcategory'],
-                item['address'],
-                item['auction_type'],
-                item['auction_status'],
-                item['application_start'],
-                item['application_deadline'],
-                item['bankrupt'],
-                item['bankrupt_href'],
-                item['inn_bankruptcy'],
-                item['contact_person'],
-                item['phone'],
-                item['email'],
-                item['inn_organizer'],
-                item['trading_number'],
-                item['lot_online'],
-                item['fedresurs'],
-                item['organizer'],
-                item['organizer_link'],
-                item['image_links'],
-                item['etp_latitude'],
-                item['etp_longitude'],
-                item['kadastr_price'],
-                item['market_price'],
-                item['square_value'],
-                item['square_zem_value'],
-                item['flat_rooms'],
-                item['latitude'],
-                item['longitude'],
-                item['image_links_external']
+            item['lot_id'],
+            item['etp'],
+            item['lot_number'],
+            item['description_short'],
+            item['price_actual'],
+            item['lot_link'],
+            item['description'],
+            item['price_start'],
+            item['chart_price'],
+            item['price_market'],
+            item['price_step'],
+            item['deposit'],
+            item['cadastral_value'],
+            item['category'],
+            item['subcategory'],
+            item['address'],
+            item['auction_type'],
+            item['auction_status'],
+            item['application_start'],
+            item['application_deadline'],
+            item['bankrupt'],
+            item['bankrupt_href'],
+            item['inn_bankruptcy'],
+            item['contact_person'],
+            item['phone'],
+            item['email'],
+            item['inn_organizer'],
+            item['trading_number'],
+            item['lot_online'],
+            item['fedresurs'],
+            item['organizer'],
+            item['organizer_link'],
+            item['image_links'],
+            item['etp_latitude'],
+            item['etp_longitude'],
+            item['kadastr_price'],
+            item['market_price'],
+            item['square_value'],
+            item['square_zem_value'],
+            item['flat_rooms'],
+            item['latitude'],
+            item['longitude'],
+            item['image_links_external']
         )
                           )
-        self.conn.commit()
