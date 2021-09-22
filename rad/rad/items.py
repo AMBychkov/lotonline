@@ -51,3 +51,4 @@ class RadItem(scrapy.Item):
     latitude = scrapy.Field()
     longitude = scrapy.Field()
     image_links_external = scrapy.Field()
+    update_time = scrapy.Field()

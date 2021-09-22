@@ -19,7 +19,7 @@ class RadPipeline(object):
         self.conn = mysql.connector.connect(
             host='localhost',  # адрес БД
             user='root',  # Имя пользователя
-            passwd='password',  # Пароль
+            passwd='4vvt3pd3',  # Пароль
             database='lotonline_rad'  # Имя БД
         )
         self.curr = self.conn.cursor()
@@ -69,7 +69,8 @@ class RadPipeline(object):
         flat_rooms text,
         latitude text,
         longitude text,
-        image_links_external text
+        image_links_external text,
+        update_time text
         );""")
 
     def process_item(self, item, spider):
@@ -81,7 +82,7 @@ class RadPipeline(object):
         self.curr.execute("""
         INSERT INTO rad_tb VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
         %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
-        %s)""", (
+        %s, %s)""", (
             item['lot_id'],
             item['etp'],
             item['lot_number'],
@@ -124,6 +125,7 @@ class RadPipeline(object):
             item['flat_rooms'],
             item['latitude'],
             item['longitude'],
-            item['image_links_external']
+            item['image_links_external'],
+            item['update_time']
         )
                           )

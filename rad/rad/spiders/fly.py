@@ -287,7 +287,7 @@ class TestSpider(scrapy.Spider):
 
     start_urls = [
         "https://catalog.lot-online.ru/index.php?dispatch=categories.view&category_id=1&features_hash=174-31371"
-        "&sort_by=timestamp&sort_order=desc&layout=short_list&items_per_page=2555",
+        "&sort_by=timestamp&sort_order=desc&layout=short_list&items_per_page=5",
     ]
 
     def parse(self, response):
@@ -502,6 +502,9 @@ class TestSpider(scrapy.Spider):
         deposit = response.meta['deposit']
         price_step = response.meta['price_step']
 
+        # Временная метка для БД
+        dt = datetime.datetime.now().isoformat(timespec='hours')
+
         # Если ссылка на адрес rad
         if response.url[8:11] == 'rad':
             # Ряды из таблицы с нуддными данными
@@ -579,5 +582,6 @@ class TestSpider(scrapy.Spider):
         items['latitude'] = str(response.meta['latitude'])
         items['longitude'] = str(response.meta['longitude'])
         items['image_links_external'] = str(response.meta['image_links_external'])
+        items['update_time'] = str(dt)
 
         yield items
